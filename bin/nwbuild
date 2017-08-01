@@ -46,14 +46,6 @@ if (argv.h || argv.help) {
     process.exit(0);
 }
 
-// Update notification
-var notifier = updateNotifier({
-    pkg: require('./../package.json')
-});
-if (notifier.update) {
-    notifier.notify();
-}
-
 // Error if there are no files
 var files = argv._[0];
 if(!files) {
@@ -63,6 +55,7 @@ if(!files) {
 
 var options = {
     files: path.resolve(process.cwd(), files) + '/**/*',
+    flavor: argv.flavor || 'sdk',
     platforms: argv.platforms.split(','),
     version: argv.version,
     macIcns: argv.macIcns || false,
@@ -72,10 +65,12 @@ var options = {
     forceDownload: argv.forceDownload
 };
 
-// Check Platform, if we are in run mode
+// If we are in run mode
 if(argv.r) {
     var currentPlatform = detectCurrentPlatform();
-    options.platforms = [ currentPlatform ];
+    if(!options.platforms){
+        options.platforms = [ currentPlatform ];
+    }
     options.currentPlatform = currentPlatform;
 }
 
